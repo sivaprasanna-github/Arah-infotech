@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom"; // Added useLocation
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowRight } from "lucide-react";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  
+  // 1. Get current route to check if we are on the Admin page
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,6 +17,11 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // 2. Hide Navbar if we are on the Admin Panel
+  if (location.pathname === "/admin") {
+    return null;
+  }
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -79,9 +87,9 @@ export default function Navbar() {
             Start a Project
           </NavLink>
 
-          {/* Admin Button - CHANGED LINK TO /admin */}
+          {/* Admin Button -> Navigates to /admin */}
           <NavLink
-            to="/admin"
+            to="/login"
             className="bg-slate-900 text-white px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-blue-600 transition-all hover:shadow-xl hover:-translate-y-0.5"
           >
             Admin <ArrowRight size={14} />
@@ -120,7 +128,7 @@ export default function Navbar() {
               
               {/* Mobile Admin Link */}
               <NavLink
-                to="/admin"
+                to="/login"
                 onClick={() => setIsOpen(false)}
                 className="text-lg font-bold text-blue-600 border-b border-slate-50 pb-2"
               >

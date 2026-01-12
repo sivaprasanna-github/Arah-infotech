@@ -12,8 +12,8 @@ import About from "./pages/About";
 import Services from "./pages/Services";
 import Careers from "./pages/Careers";
 import Contact from "./pages/Contact";
-import Admin from "./pages/Admin";
-import Work from "./pages/Work"; // Case Studies Page
+import Admin from "./pages/Admin"; 
+import Work from "./pages/Work";
 
 // 1. Scroll To Top Helper
 const ScrollToTop = () => {
@@ -43,15 +43,28 @@ const NotFound = () => (
     <h1 className="text-9xl font-black text-white/5 absolute select-none">404</h1>
     <div className="relative z-10 text-center">
       <h2 className="text-3xl font-bold mb-4 text-cyan-500">System.Error: Page_Not_Found</h2>
-      <p className="text-slate-400 mb-8 max-w-md mx-auto">
-        The resource you are looking for has been moved or deleted from the Arah Infotech cloud.
-      </p>
       <a href="/" className="bg-slate-900 border border-slate-700 hover:bg-cyan-600 hover:border-cyan-500 hover:text-white transition-all px-8 py-3 rounded-full font-bold text-slate-300">
         Return to Dashboard
       </a>
     </div>
   </div>
 );
+
+// 4. Helper to conditionally render Footer
+// This ensures the Footer does NOT show up on the Admin Panel
+const LayoutWithFooter = ({ children }) => {
+  const location = useLocation();
+  const showFooter = location.pathname !== "/admin";
+
+  return (
+    <>
+      <main className="min-h-screen">
+        {children}
+      </main>
+      {showFooter && <Footer />}
+    </>
+  );
+};
 
 function App() {
   return (
@@ -63,9 +76,10 @@ function App() {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
       </div>
 
+      {/* Navbar handles its own hiding logic internally */}
       <Navbar />
 
-      <main className="min-h-screen">
+      <LayoutWithFooter>
         <AnimatePresence mode="wait">
           <Routes>
             <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
@@ -74,14 +88,14 @@ function App() {
             <Route path="/careers" element={<PageWrapper><Careers /></PageWrapper>} />
             <Route path="/contact" element={<PageWrapper><Contact /></PageWrapper>} />
             <Route path="/work" element={<PageWrapper><Work /></PageWrapper>} />
-            <Route path="/admin" element={<PageWrapper><Admin /></PageWrapper>} />
+            
+            {/* Admin Route - No PageWrapper to keep dashboard layout stable */}
+            <Route path="/admin" element={<Admin />} />
             
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AnimatePresence>
-      </main>
-
-      <Footer />
+      </LayoutWithFooter>
     </BrowserRouter>
   );
 }

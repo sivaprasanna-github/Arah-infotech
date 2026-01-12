@@ -14,7 +14,8 @@ const app = express();
 const allowedOrigins = [
     "https://prasanna-arah-infotech.netlify.app", // Your Live Frontend
     "https://arah-infotech.onrender.com",        // Your Live Backend (Self)
-    "http://localhost:3000"                        // Your Local Computer (for testing)
+    "http://localhost:3000" ,
+    "http://localhost:5000"                       // Your Local Computer (for testing)
 ];
 
 app.use(cors({
