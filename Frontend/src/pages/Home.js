@@ -1,9 +1,12 @@
 import React from "react";
-import { Link } from "react-router-dom"; // IMPORT LINK
+import { Link } from "react-router-dom"; 
 import { motion } from "framer-motion";
 import { 
   Cpu, Globe, ShieldCheck, Layers, ArrowRight, CheckCircle2 
 } from "lucide-react";
+
+// --- UPDATED IMPORT ---
+// Make sure you saved the image as 'ai-hero.jpg' in your assets folder
 import hero from "../assets/hero.jpg"; 
 
 export default function Home() {
@@ -12,15 +15,18 @@ export default function Home() {
       
       {/* 1. HERO SECTION */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        
         <motion.img
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}
-          transition={{ duration: 10, repeat: Infinity, repeatType: "reverse" }}
-          src={hero}
+          transition={{ duration: 15, repeat: Infinity, repeatType: "reverse" }}
+          src={hero}  // <--- THIS LINKS THE IMAGE
           alt="Arah Infotech Hero"
-          className="absolute inset-0 w-full h-full object-cover opacity-40"
+          className="absolute inset-0 w-full h-full object-cover opacity-50" // <--- CHANGED OPACITY TO 0.5
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/20 via-slate-950/80 to-slate-950" />
+        
+        {/* Dark Gradient Overlay (Ensures text is readable) */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/30 via-slate-950/70 to-slate-950" />
         
         <div className="relative z-10 text-center px-6 max-w-5xl">
           <motion.div
@@ -28,28 +34,28 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <span className="px-4 py-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 text-sm font-medium mb-6 inline-block">
+            <span className="px-4 py-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 text-sm font-medium mb-6 inline-block backdrop-blur-md">
               AI-Powered Software Excellence in Madhapur
             </span>
-            <h1 className="text-6xl md:text-8xl font-extrabold mb-6 tracking-tight">
+            <h1 className="text-6xl md:text-8xl font-extrabold mb-6 tracking-tight drop-shadow-2xl">
               We Code the <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">Future.</span>
             </h1>
-            <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto">
+            <p className="text-xl text-slate-300 mb-10 max-w-2xl mx-auto drop-shadow-md">
               Arah Infotech delivers bespoke AI solutions and high-performance web systems for modern enterprises.
             </p>
             
-            {/* UPDATED BUTTONS WITH LINKS */}
+            {/* BUTTONS */}
             <div className="flex flex-col md:flex-row gap-4 justify-center">
               <Link 
                 to="/contact" 
-                className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-8 py-4 rounded-full font-bold transition-all flex items-center justify-center gap-2 group"
+                className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 px-8 py-4 rounded-full font-bold transition-all flex items-center justify-center gap-2 group shadow-lg shadow-cyan-500/20"
               >
                 Start Your Project <ArrowRight className="group-hover:translate-x-1 transition-transform" />
               </Link>
               
               <Link 
                 to="/work" 
-                className="px-8 py-4 rounded-full border border-slate-700 hover:bg-slate-800 transition-all font-bold flex items-center justify-center"
+                className="px-8 py-4 rounded-full border border-slate-600 bg-slate-950/50 backdrop-blur-sm hover:bg-slate-800 transition-all font-bold flex items-center justify-center"
               >
                 View Case Studies
               </Link>
