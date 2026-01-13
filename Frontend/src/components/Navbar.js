@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom"; 
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowRight } from "lucide-react";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  
+  // 1. Get current route
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,6 +17,12 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // 2. IMPORTANT: This hides the Main Navbar when you are on the Admin Dashboard
+  // This is GOOD because the Admin page has its own Sidebar.
+  if (location.pathname === "/admin") {
+    return null;
+  }
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -79,7 +88,8 @@ export default function Navbar() {
             Start a Project
           </NavLink>
 
-          {/* Admin Button - CHANGED LINK TO /admin */}
+          {/* --- FIX IS HERE --- */}
+          {/* Changed to="/login" to to="/admin" */}
           <NavLink
             to="/admin"
             className="bg-slate-900 text-white px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-blue-600 transition-all hover:shadow-xl hover:-translate-y-0.5"
@@ -118,7 +128,8 @@ export default function Navbar() {
                 </NavLink>
               ))}
               
-              {/* Mobile Admin Link */}
+              {/* --- FIX IS HERE ALSO --- */}
+              {/* Changed to="/login" to to="/admin" */}
               <NavLink
                 to="/admin"
                 onClick={() => setIsOpen(false)}
