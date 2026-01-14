@@ -1,17 +1,62 @@
 import React, { useState } from "react";
-import { Mail, MapPin, Phone, CheckCircle, ArrowRight } from "lucide-react";
+import { Mail, MapPin, Phone, CheckCircle, ArrowRight, Loader2, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function Contact() {
-  const [formStatus, setFormStatus] = useState("idle"); // idle, submitting, success
+  const [formStatus, setFormStatus] = useState("idle"); // idle, submitting, success, error
+  
+  // State to hold actual user input
+  const [formData, setFormData] = useState({
+    name: "",
+    company: "",
+    email: "",
+    service: "Full-Stack Web Dev",
+    budget: "$1,000 - $5,000",
+    details: ""
+  });
 
-  const handleSubmit = (e) => {
+  // Handle input changes
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Handle Real Submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setFormStatus("submitting");
-    // Simulate network request
-    setTimeout(() => {
-      setFormStatus("success");
-    }, 1500);
+
+    // Prepare data to match your Backend Schema
+    const payload = {
+      name: formData.name,
+      email: formData.email,
+      subject: `New Inquiry: ${formData.service}`, 
+      message: `Company: ${formData.company}\nBudget: ${formData.budget}\n\nDetails:\n${formData.details}`
+    };
+
+    try {
+      // Send data to your backend
+      const response = await fetch("http://localhost:5000/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setFormStatus("success");
+        // Reset form
+        setFormData({ name: "", company: "", email: "", service: "Full-Stack Web Dev", budget: "$1,000 - $5,000", details: "" });
+      } else {
+        setFormStatus("error");
+        console.error("Server Error:", data);
+      }
+    } catch (error) {
+      console.error("Network Error:", error);
+      setFormStatus("error");
+    }
   };
 
   return (
@@ -56,7 +101,6 @@ export default function Contact() {
               <div>
                 <h3 className="text-xl font-bold mb-1 text-white">Email Us</h3>
                 <p className="text-slate-400">ops@arahinfotech.net</p>
-                <p className="text-slate-500 text-sm">Response within 24 hours.</p>
               </div>
             </div>
 
@@ -67,7 +111,6 @@ export default function Contact() {
               <div>
                 <h3 className="text-xl font-bold mb-1 text-white">Call Us</h3>
                 <p className="text-slate-400">+91 89198 01095</p>
-                <p className="text-slate-500 text-sm">Mon-Fri, 9am - 6pm IST</p>
               </div>
             </div>
           </div>
@@ -80,7 +123,6 @@ export default function Contact() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="bg-slate-900/50 backdrop-blur-sm p-8 md:p-10 rounded-[2rem] border border-white/10 shadow-2xl relative overflow-hidden"
         >
-          {/* Decorative background blur */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
 
           {formStatus === "success" ? (
@@ -90,7 +132,7 @@ export default function Contact() {
               </div>
               <h3 className="text-3xl font-bold mb-2">Message Sent!</h3>
               <p className="text-slate-400 max-w-xs">
-                Thank you for contacting Arah Infotech. Our engineering team will review your requirements and get back to you shortly.
+                Thank you for contacting Arah Infotech. We will review your requirements and get back to you shortly.
               </p>
               <button 
                 onClick={() => setFormStatus("idle")} 
@@ -103,21 +145,33 @@ export default function Contact() {
             <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
               <h3 className="text-2xl font-bold mb-6">Tell us about your project</h3>
               
+              {formStatus === "error" && (
+                <div className="bg-red-500/20 text-red-300 p-4 rounded-xl flex items-center gap-2 text-sm font-bold border border-red-500/30">
+                  <AlertCircle size={18} /> Error sending. Is the backend running?
+                </div>
+              )}
+
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Your Name</label>
                   <input 
                     required 
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
                     type="text" 
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-white focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none transition-all" 
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-white focus:border-cyan-500 outline-none transition-all" 
                     placeholder="John Doe" 
                   />
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Company Name</label>
                   <input 
+                    name="company"
+                    value={formData.company}
+                    onChange={handleChange}
                     type="text" 
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-white focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none transition-all" 
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-white focus:border-cyan-500 outline-none transition-all" 
                     placeholder="Tech Corp Ltd." 
                   />
                 </div>
@@ -127,8 +181,11 @@ export default function Contact() {
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Email Address</label>
                 <input 
                   required 
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   type="email" 
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-white focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none transition-all" 
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-white focus:border-cyan-500 outline-none transition-all" 
                   placeholder="john@example.com" 
                 />
               </div>
@@ -137,27 +194,35 @@ export default function Contact() {
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Service Type</label>
                   <div className="relative">
-                    <select className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-white focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none appearance-none transition-all cursor-pointer">
+                    <select 
+                      name="service"
+                      value={formData.service}
+                      onChange={handleChange}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-white focus:border-cyan-500 appearance-none outline-none cursor-pointer"
+                    >
                       <option>Full-Stack Web Dev</option>
                       <option>Mobile App (iOS/Android)</option>
                       <option>AI / Machine Learning</option>
                       <option>Cyber Security Audit</option>
                       <option>Cloud Infrastructure</option>
                     </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">▼</div>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Project Budget</label>
                   <div className="relative">
-                    <select className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-white focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none appearance-none transition-all cursor-pointer">
+                    <select 
+                      name="budget"
+                      value={formData.budget}
+                      onChange={handleChange}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-white focus:border-cyan-500 appearance-none outline-none cursor-pointer"
+                    >
                       <option>$1,000 - $5,000</option>
                       <option>$5,000 - $10,000</option>
                       <option>$10,000 - $25,000</option>
                       <option>$25,000+</option>
                       <option>Undisclosed</option>
                     </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">▼</div>
                   </div>
                 </div>
               </div>
@@ -165,9 +230,12 @@ export default function Contact() {
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Project Details</label>
                 <textarea 
+                  name="details"
+                  value={formData.details}
+                  onChange={handleChange}
                   rows="4" 
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-white focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none transition-all resize-none" 
-                  placeholder="Briefly describe your project goals, timeline, and current challenges..."
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-white focus:border-cyan-500 outline-none transition-all resize-none" 
+                  placeholder="Briefly describe your project goals..."
                 ></textarea>
               </div>
 
@@ -177,7 +245,7 @@ export default function Contact() {
                 className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-cyan-500/25 flex justify-center items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {formStatus === "submitting" ? (
-                  "Sending Request..." 
+                  <><Loader2 className="animate-spin" /> Sending...</> 
                 ) : (
                   <>Send Proposal Request <ArrowRight size={18} /></>
                 )}

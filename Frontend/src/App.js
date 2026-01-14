@@ -1,5 +1,5 @@
+import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 // Components
@@ -12,10 +12,10 @@ import About from "./pages/About";
 import Services from "./pages/Services";
 import Careers from "./pages/Careers";
 import Contact from "./pages/Contact";
-import Admin from "./pages/Admin"; 
 import Work from "./pages/Work";
+import Admin from "./pages/Admin"; // Points to the new Controller
 
-// 1. Scroll To Top Helper
+// Scroll To Top Helper
 const ScrollToTop = () => {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -24,7 +24,7 @@ const ScrollToTop = () => {
   return null;
 };
 
-// 2. Page Transition Wrapper
+// Page Transition Wrapper
 const PageWrapper = ({ children }) => (
   <motion.div
     initial={{ opacity: 0, x: 10 }}
@@ -36,7 +36,7 @@ const PageWrapper = ({ children }) => (
   </motion.div>
 );
 
-// 3. 404 Not Found Page
+// 404 Page
 const NotFound = () => (
   <div className="h-screen bg-slate-950 flex flex-col items-center justify-center text-white p-6 relative overflow-hidden">
     <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-slate-950 to-slate-950"></div>
@@ -50,12 +50,10 @@ const NotFound = () => (
   </div>
 );
 
-// 4. Helper to conditionally render Footer
-// This ensures the Footer does NOT show up on the Admin Panel
+// Footer Toggle
 const LayoutWithFooter = ({ children }) => {
   const location = useLocation();
   const showFooter = location.pathname !== "/admin";
-
   return (
     <>
       <main className="min-h-screen">
@@ -76,7 +74,6 @@ function App() {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
       </div>
 
-      {/* Navbar handles its own hiding logic internally */}
       <Navbar />
 
       <LayoutWithFooter>
@@ -89,7 +86,7 @@ function App() {
             <Route path="/contact" element={<PageWrapper><Contact /></PageWrapper>} />
             <Route path="/work" element={<PageWrapper><Work /></PageWrapper>} />
             
-            {/* Admin Route - No PageWrapper to keep dashboard layout stable */}
+            {/* Admin Route */}
             <Route path="/admin" element={<Admin />} />
             
             <Route path="*" element={<NotFound />} />
